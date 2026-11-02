@@ -8,6 +8,7 @@ TagManager:
   - Enemy
   - Door
   - Bottom
+  - Box
   layers:
   - Default
   - TransparentFX
@@ -15,9 +16,9 @@ TagManager:
   - 
   - Water
   - UI
-  - 
-  - 
-  - 
+  - Player
+  - Box
+  - Ground
   - 
   - 
   - 

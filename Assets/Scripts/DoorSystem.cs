@@ -3,36 +3,44 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D))]
 public class DoorSystem : MonoBehaviour
 {
-    [SerializeField] private Vector2 moveOffset = new Vector2(0f, 0f);
-    [SerializeField, Min(0.01f)] private float moveSpeed = 0f;
+    [SerializeField]
+    private Vector2 moveOffset =
+        new Vector2(0f, 3f);
+
+    [SerializeField] private float moveSpeed = 2f;
 
     private Rigidbody2D rb;
-    private Vector2 targetPosition;
-    private bool isOpen = false;
+    private Vector2 closedPosition;
+    private Vector2 openPosition;
+    private bool isOpen;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
 
-        // èâä˙à íuÇ©ÇÁÇ«ÇÍÇæÇØìÆÇ©Ç∑Ç©ÇÃïœêî
-        targetPosition = rb.position + moveOffset;
+        closedPosition = rb.position;
+        openPosition = closedPosition + moveOffset;
     }
 
     public void Open()
     {
-        isOpen = true;
+        SetOpen(true);
+    }
+
+    public void SetOpen(bool value)
+    {
+        isOpen = value;
     }
 
     private void FixedUpdate()
     {
-        if (!isOpen) return;
+        Vector2 target =
+            isOpen ? openPosition : closedPosition;
 
-        Vector2 nextPosition = Vector2.MoveTowards(
+        rb.MovePosition(Vector2.MoveTowards(
             rb.position,
-            targetPosition,
+            target,
             moveSpeed * Time.fixedDeltaTime
-        );
-
-        rb.MovePosition(nextPosition);
+        ));
     }
 }
