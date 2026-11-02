@@ -45,13 +45,13 @@ public class CharacterMovement : MonoBehaviour
         var kb = Keyboard.current;
         if (kb == null) return;
 
-        if (isGround && kb.qKey.wasPressedThisFrame)
-        {
-            SetGravityAngle(gravityAngle + 90f);
-        }
-        if (isGround && kb.eKey.wasPressedThisFrame)
+        if (isGround && kb.leftArrowKey.wasPressedThisFrame)
         {
             SetGravityAngle(gravityAngle - 90f);
+        }
+        if (isGround && kb.rightArrowKey.wasPressedThisFrame)
+        {
+            SetGravityAngle(gravityAngle + 90f);
         }
 
         Quaternion rot = Quaternion.Euler(0, 0, gravityAngle);
@@ -59,8 +59,14 @@ public class CharacterMovement : MonoBehaviour
         Vector2 up = rot * Vector2.up;
 
         float horizontal = 0f;
-        if (kb.aKey.isPressed || kb.leftArrowKey.isPressed) horizontal -= 1f;
-        if (kb.dKey.isPressed || kb.rightArrowKey.isPressed) horizontal += 1f;
+        if (kb.aKey.isPressed)
+        {
+            horizontal -= 1f;
+        }
+        if (kb.dKey.isPressed)
+        {
+            horizontal += 1f;
+        }
 
         float verticalSpeed = Vector2.Dot(rb.linearVelocity, up);
         rb.linearVelocity = right * (horizontal * speed) + up * verticalSpeed;
