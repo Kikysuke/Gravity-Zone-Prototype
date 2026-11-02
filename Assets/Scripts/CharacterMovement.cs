@@ -14,12 +14,11 @@ public class CharacterMovement : MonoBehaviour
 
     Vector2 playerPos;
 
-   // public Transform cameraTransform;
     float gravityAngle = 0f;
     float gravityStrength;
     Vector2 originalGravity;
 
-    Vector2 Up => Quaternion.Euler(0, 0, gravityAngle) * Vector2.up;
+    public Vector2 Up => Quaternion.Euler(0, 0, gravityAngle) * Vector2.up;
 
     void Awake()
     {
@@ -34,9 +33,6 @@ public class CharacterMovement : MonoBehaviour
         jumpFoward = new Vector2(0.0f, 0.1f);
 
         playerPos = transform.position + new Vector3(0.0f, 0.5f, 0.0f);
-
-        //if (cameraTransform == null && Camera.main != null)
-        //    cameraTransform = Camera.main.transform;
     }
 
     void OnDestroy()
@@ -49,8 +45,14 @@ public class CharacterMovement : MonoBehaviour
         var kb = Keyboard.current;
         if (kb == null) return;
 
-        if (kb.qKey.wasPressedThisFrame) SetGravityAngle(gravityAngle + 90f);
-        if (kb.eKey.wasPressedThisFrame) SetGravityAngle(gravityAngle - 90f);
+        if (isGround && kb.qKey.wasPressedThisFrame)
+        {
+            SetGravityAngle(gravityAngle + 90f);
+        }
+        if (isGround && kb.eKey.wasPressedThisFrame)
+        {
+            SetGravityAngle(gravityAngle - 90f);
+        }
 
         Quaternion rot = Quaternion.Euler(0, 0, gravityAngle);
         Vector2 right = rot * Vector2.right;
@@ -87,7 +89,6 @@ public class CharacterMovement : MonoBehaviour
         Physics2D.gravity = (Vector2)(rot * Vector2.down) * gravityStrength;
 
         rb.rotation = gravityAngle;
-        //if (cameraTransform != null) cameraTransform.rotation = rot;
 
         rb.linearVelocity = Vector2.zero;
         isGround = false;
@@ -107,7 +108,7 @@ public class CharacterMovement : MonoBehaviour
 
     void CheckGround(Collision2D collision)
     {
-        if (!(collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("Box")))
+        if (!(collision.gameObject.CompareTag("Ground")))
             return;
 
         foreach (var contact in collision.contacts)
