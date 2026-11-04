@@ -673,7 +673,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: '       MOVE: WASD     JUMP: SPACE     GRAVITY CHANGE: QE'
+  m_Text: "       MOVE: WASD     JUMP: SPACE     GRAVITY CHANGE: \u2190\u2192"
 --- !u!222 &1409012625
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1720,6 +1720,10 @@ PrefabInstance:
     - target: {fileID: 8034585591446057439, guid: c3ddb6fa09ee5a541b8a6b16f675676e, type: 3}
       propertyPath: m_Name
       value: EnemyParent
+      objectReference: {fileID: 0}
+    - target: {fileID: 8115667192968184444, guid: c3ddb6fa09ee5a541b8a6b16f675676e, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
