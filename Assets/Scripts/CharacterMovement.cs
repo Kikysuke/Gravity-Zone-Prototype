@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 public class CharacterMovement : MonoBehaviour
 {
     Rigidbody2D rb;
+    Transform cam;
     public float speed = 10.0f;
     Vector2 jumpFoward;
     public Key jumpKey = Key.Space;
@@ -33,6 +34,8 @@ public class CharacterMovement : MonoBehaviour
         jumpFoward = new Vector2(0.0f, 0.1f);
 
         playerPos = transform.position + new Vector3(0.0f, 0.5f, 0.0f);
+
+        cam = Camera.main.transform;
     }
 
     void OnDestroy()
@@ -53,20 +56,21 @@ public class CharacterMovement : MonoBehaviour
         {
             SetGravityAngle(gravityAngle + 90f);
         }
+        if (isGround && kb.upArrowKey.wasPressedThisFrame)
+        {
+            SetGravityAngle(gravityAngle  + 180f);
+        }
 
         Quaternion rot = Quaternion.Euler(0, 0, gravityAngle);
         Vector2 right = rot * Vector2.right;
         Vector2 up = rot * Vector2.up;
 
         float horizontal = 0f;
-        if (kb.aKey.isPressed)
-        {
-            horizontal -= 1f;
-        }
-        if (kb.dKey.isPressed)
-        {
-            horizontal += 1f;
-        }
+        if (kb.aKey.isPressed) horizontal -= 1f;
+        if (kb.dKey.isPressed) horizontal += 1f;
+
+        if (cam != null && Vector2.Dot(cam.right, right) < -0.1f)
+            horizontal = -horizontal;
 
         float verticalSpeed = Vector2.Dot(rb.linearVelocity, up);
         rb.linearVelocity = right * (horizontal * speed) + up * verticalSpeed;
