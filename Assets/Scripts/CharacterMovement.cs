@@ -7,9 +7,19 @@ public class CharacterMovement : MonoBehaviour
     Rigidbody2D rb;
     Transform cam;
     public float speed = 10.0f;
+
     Vector2 jumpFoward;
     public Key jumpKey = Key.Space;
     public float jumpPower = 6.5f;
+
+    public Key glideKey = Key.LeftShift;
+    public float glideFallSpeed = 2f;
+    public float maxGlideTime = 1.5f;
+    float glideTimeLeft;
+    public float glideRecoverRate = 1.5f;
+
+    public float GlideFraction => glideTimeLeft / maxGlideTime;
+
     private bool isGround;
     private bool facingRight = true;
 
@@ -36,6 +46,8 @@ public class CharacterMovement : MonoBehaviour
         playerPos = transform.position + new Vector3(0.0f, 0.5f, 0.0f);
 
         cam = Camera.main.transform;
+
+        glideTimeLeft = maxGlideTime;
     }
 
     void OnDestroy()
@@ -48,17 +60,17 @@ public class CharacterMovement : MonoBehaviour
         var kb = Keyboard.current;
         if (kb == null) return;
 
-        if (isGround && kb.leftArrowKey.wasPressedThisFrame)
+        if (kb.leftArrowKey.wasPressedThisFrame)
         {
             SetGravityAngle(gravityAngle - 90f);
         }
-        if (isGround && kb.rightArrowKey.wasPressedThisFrame)
+        if (kb.rightArrowKey.wasPressedThisFrame)
         {
             SetGravityAngle(gravityAngle + 90f);
         }
-        if (isGround && kb.upArrowKey.wasPressedThisFrame)
+        if (kb.upArrowKey.wasPressedThisFrame)
         {
-            SetGravityAngle(gravityAngle  + 180f);
+            SetGravityAngle(gravityAngle + 180f);
         }
 
         Quaternion rot = Quaternion.Euler(0, 0, gravityAngle);
@@ -66,13 +78,36 @@ public class CharacterMovement : MonoBehaviour
         Vector2 up = rot * Vector2.up;
 
         float horizontal = 0f;
-        if (kb.aKey.isPressed) horizontal -= 1f;
-        if (kb.dKey.isPressed) horizontal += 1f;
+        if (kb.aKey.isPressed)
+        {
+            horizontal -= 1f;
+        }
+        if (kb.dKey.isPressed)
+        {
+            horizontal += 1f;
+        }
 
         if (cam != null && Vector2.Dot(cam.right, right) < -0.1f)
+        {
             horizontal = -horizontal;
-
+        }
         float verticalSpeed = Vector2.Dot(rb.linearVelocity, up);
+
+        bool gliding = !isGround && glideTimeLeft > 0f && kb[glideKey].isPressed && verticalSpeed < 0f;
+        if (gliding)
+        {
+            glideTimeLeft -= Time.deltaTime;
+            if (verticalSpeed < -glideFallSpeed)
+            {
+                verticalSpeed = -glideFallSpeed;
+            }
+        }
+
+        if (isGround)
+        { 
+            glideTimeLeft = Mathf.MoveTowards(glideTimeLeft, maxGlideTime, glideRecoverRate * Time.deltaTime);
+        }
+
         rb.linearVelocity = right * (horizontal * speed) + up * verticalSpeed;
 
         if (isGround && kb[jumpKey].wasPressedThisFrame)
@@ -87,8 +122,16 @@ public class CharacterMovement : MonoBehaviour
             Respawn();
         }
 
-        if (horizontal > 0 && !facingRight) Flip();
-        if (horizontal < 0 && facingRight) Flip();
+        if (horizontal > 0 && !facingRight) 
+        { 
+            Flip();
+        }
+        if (horizontal < 0 && facingRight)
+        {
+            Flip(); 
+        }
+
+
     }
 
     void SetGravityAngle(float angle)
@@ -135,6 +178,7 @@ public class CharacterMovement : MonoBehaviour
     {
         SetGravityAngle(0f);
         transform.position = playerPos;
+        glideTimeLeft = maxGlideTime;
     }
 
     void Flip()
@@ -144,5 +188,13 @@ public class CharacterMovement : MonoBehaviour
         gameObject.transform.localScale = currentScale;
 
         facingRight = !facingRight;
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Obstacles"))
+        {
+            Respawn();
+        }
     }
 }

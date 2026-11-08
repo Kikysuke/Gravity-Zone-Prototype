@@ -9,6 +9,7 @@ TagManager:
   - Door
   - Bottom
   - Box
+  - Obstacles
   layers:
   - Default
   - TransparentFX

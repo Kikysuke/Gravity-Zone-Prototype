@@ -38,7 +38,7 @@ public class EnemyController : MonoBehaviour
 
         bool hitWithFeet = Vector2.Dot(normal, player.Up) > 0.7f;
 
-        bool onEnemyTop = Vector2.Dot(normal, Vector2.up) > 0.7f;
+        bool onEnemyTop = Vector2.Dot(normal, transform.up) > 0.7f;
 
         if (hitWithFeet && !onEnemyTop)
         {
