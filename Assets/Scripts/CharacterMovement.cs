@@ -27,6 +27,8 @@ public class CharacterMovement : MonoBehaviour
 
     float gravityAngle = 0f;
     float gravityStrength;
+    public int gravityUse = 0;
+    public int gravityMaxUse = 2;
     Vector2 originalGravity;
 
     public Vector2 Up => Quaternion.Euler(0, 0, gravityAngle) * Vector2.up;
@@ -60,17 +62,25 @@ public class CharacterMovement : MonoBehaviour
         var kb = Keyboard.current;
         if (kb == null) return;
 
-        if (kb.leftArrowKey.wasPressedThisFrame)
+        if (kb.leftArrowKey.wasPressedThisFrame && gravityUse<=gravityMaxUse)
         {
-            SetGravityAngle(gravityAngle - 90f);
+            SetGravityAngle(-90f);
+            gravityUse++;
         }
-        if (kb.rightArrowKey.wasPressedThisFrame)
+        if (kb.rightArrowKey.wasPressedThisFrame && gravityUse <= gravityMaxUse)
         {
-            SetGravityAngle(gravityAngle + 90f);
+            SetGravityAngle(90f);
+            gravityUse++;
         }
-        if (kb.upArrowKey.wasPressedThisFrame)
+        if (kb.upArrowKey.wasPressedThisFrame && gravityUse <= gravityMaxUse)
         {
-            SetGravityAngle(gravityAngle + 180f);
+            SetGravityAngle(180f);
+            gravityUse++;
+        }
+        if (kb.downArrowKey.wasPressedThisFrame && gravityUse <= gravityMaxUse)
+        {
+            SetGravityAngle(0f);
+            gravityUse++;
         }
 
         Quaternion rot = Quaternion.Euler(0, 0, gravityAngle);
@@ -106,6 +116,7 @@ public class CharacterMovement : MonoBehaviour
         if (isGround)
         { 
             glideTimeLeft = Mathf.MoveTowards(glideTimeLeft, maxGlideTime, glideRecoverRate * Time.deltaTime);
+            gravityUse = 0;
         }
 
         rb.linearVelocity = right * (horizontal * speed) + up * verticalSpeed;

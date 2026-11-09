@@ -5,6 +5,7 @@ public class MenuController : MonoBehaviour
 {
     public void StartGame()
     {
+        Debug.Log("START");
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
 
@@ -14,8 +15,8 @@ public class MenuController : MonoBehaviour
         Application.Quit();
     }
 
-    public void Menu()
-    {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex-3);
-    }
+    //public void Menu()
+    //{
+    //    SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex-3);
+    //}
 }
